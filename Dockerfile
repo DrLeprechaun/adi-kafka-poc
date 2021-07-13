@@ -22,12 +22,15 @@ ENV KAFKA_VERSION=$kafka_version \
 
 ENV PATH=${PATH}:${KAFKA_HOME}/bin
 
+# Copy connector
 RUN mkdir -p /opt/connectors
 COPY ./camel-netty-http-kafka-connector-0.7.0-package.tar.gz /opt/connectors
 RUN tar -xvzf /opt/connectors/camel-netty-http-kafka-connector-0.7.0-package.tar.gz --directory /opt/connectors
 RUN rm /opt/connectors/camel-netty-http-kafka-connector-0.7.0-package.tar.gz
 
-COPY ./CamelNettyhttpSinkConnector.properties /config
+#Copy connector properties
+RUN mkdir -p /opt/config
+COPY ./CamelNettyhttpSinkConnector.properties /opt/config
 
 COPY download-kafka.sh start-kafka.sh broker-list.sh create-topics.sh versions.sh /tmp/
 
@@ -48,7 +51,6 @@ COPY overrides /opt/overrides
 VOLUME ["/kafka"]
 
 # Update properties
-#RUN sed -i "s|some-original-string|the-new-string |g" /etc/sysctl.conf
 RUN sed -i "$ a plugin.path=/opt/connectors" $KAFKA_HOME/config/connect-standalone.properties
 
 # Use "exec" form so that it runs as PID 1 (useful for graceful shutdown)
