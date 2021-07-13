@@ -24,13 +24,18 @@ ENV PATH=${PATH}:${KAFKA_HOME}/bin
 
 # Copy connector
 RUN mkdir -p /opt/connectors
-COPY ./camel-netty-http-kafka-connector-0.7.0-package.tar.gz /opt/connectors
-RUN tar -xvzf /opt/connectors/camel-netty-http-kafka-connector-0.7.0-package.tar.gz --directory /opt/connectors
-RUN rm /opt/connectors/camel-netty-http-kafka-connector-0.7.0-package.tar.gz
+#COPY ./camel-netty-http-kafka-connector-0.7.0-package.tar.gz /opt/connectors
+#RUN tar -xvzf /opt/connectors/camel-netty-http-kafka-connector-0.7.0-package.tar.gz --directory /opt/connectors
+#RUN rm /opt/connectors/camel-netty-http-kafka-connector-0.7.0-package.tar.gz
+
+COPY ./netty-http-extended-0.7.0-package.tar.gz /opt/connectors
+RUN tar -xvzf /opt/connectors/netty-http-extended-0.7.0-package.tar.gz --directory /opt/connectors
+RUN rm /opt/connectors/netty-http-extended-0.7.0-package.tar.gz
 
 #Copy connector properties
 RUN mkdir -p /opt/config
 COPY ./CamelNettyhttpSinkConnector.properties /opt/config
+COPY ./CamelNettyhttpSourceConnector.properties /opt/config
 
 COPY download-kafka.sh start-kafka.sh broker-list.sh create-topics.sh versions.sh /tmp/
 
