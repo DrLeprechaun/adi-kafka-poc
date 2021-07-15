@@ -65,8 +65,9 @@ public class CustomStringConverter implements Converter, HeaderConverter {
 
     @Override
     public byte[] fromConnectData(String topic, Schema schema, Object value) {
+        System.out.println("+++ FROM CONNECT DATA");
         try {
-            Reporter reporter = new InMemoryReporter();
+            /*Reporter reporter = new InMemoryReporter();
             Sampler sampler = new ConstSampler(true);
             Tracer tracer = new JaegerTracer.Builder("adidas-poc")
                     .withReporter(reporter)
@@ -75,7 +76,7 @@ public class CustomStringConverter implements Converter, HeaderConverter {
             Span span = tracer.buildSpan("fromConnectData").start();
             span.setTag("fromConnectData", "fromConnectData-tag");
             span.log(ImmutableMap.of("fromConnectData-log", "fromConnectData-log-message"));
-            span.finish();
+            span.finish();*/
             return serializer.serialize(topic, value == null ? null : value.toString());
         } catch (SerializationException e) {
             throw new DataException("Failed to serialize to a string: ", e);
@@ -84,8 +85,9 @@ public class CustomStringConverter implements Converter, HeaderConverter {
 
     @Override
     public SchemaAndValue toConnectData(String topic, byte[] value) {
+        System.out.println("+++ TO CONNECT DATA");
         try {
-            Reporter reporter = new InMemoryReporter();
+            /*Reporter reporter = new InMemoryReporter();
             Sampler sampler = new ConstSampler(true);
             Tracer tracer = new JaegerTracer.Builder("adidas-poc")
                     .withReporter(reporter)
@@ -94,7 +96,7 @@ public class CustomStringConverter implements Converter, HeaderConverter {
             Span span = tracer.buildSpan("toConnectData").start();
             span.setTag("toConnectData", "toConnectData-tag");
             span.log(ImmutableMap.of("toConnectData-log", "toConnectData-log-message"));
-            span.finish();
+            span.finish();*/
             return new SchemaAndValue(Schema.OPTIONAL_STRING_SCHEMA, deserializer.deserialize(topic, value));
         } catch (SerializationException e) {
             throw new DataException("Failed to deserialize string: ", e);
@@ -103,16 +105,19 @@ public class CustomStringConverter implements Converter, HeaderConverter {
 
     @Override
     public byte[] fromConnectHeader(String topic, String headerKey, Schema schema, Object value) {
+        System.out.println("+++ FROM CONNECT HEADER");
         return fromConnectData(topic, schema, value);
     }
 
     @Override
     public SchemaAndValue toConnectHeader(String topic, String headerKey, byte[] value) {
+        System.out.println("+++ TO CONNECT HEADER");
         return toConnectData(topic, value);
     }
 
     @Override
     public void close() {
+        System.out.println("+++ CLOSE");
         // do nothing
     }
 

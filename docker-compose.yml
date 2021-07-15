@@ -8,6 +8,7 @@ services:
     build: .
     ports:
       - "9092:9092"
+      - "8093:8093"
     environment:
       KAFKA_ADVERTISED_HOST_NAME: host.docker.internal
       KAFKA_CREATE_TOPICS: "test:1:1"
