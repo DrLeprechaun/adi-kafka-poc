@@ -24,11 +24,12 @@ ENV PATH=${PATH}:${KAFKA_HOME}/bin
 
 # Copy connector
 RUN mkdir -p /opt/connectors
+# Default connector
 #COPY ./camel-netty-http-kafka-connector-0.7.0-package.tar.gz /opt/connectors
 #RUN tar -xvzf /opt/connectors/camel-netty-http-kafka-connector-0.7.0-package.tar.gz --directory /opt/connectors
 #RUN rm /opt/connectors/camel-netty-http-kafka-connector-0.7.0-package.tar.gz
-
-COPY ./netty-http-extended-0.7.0-package.tar.gz /opt/connectors
+# Custom connector
+COPY ./netty-http-extended/target/netty-http-extended-0.7.0-package.tar.gz /opt/connectors
 RUN tar -xvzf /opt/connectors/netty-http-extended-0.7.0-package.tar.gz --directory /opt/connectors
 RUN rm /opt/connectors/netty-http-extended-0.7.0-package.tar.gz
 
