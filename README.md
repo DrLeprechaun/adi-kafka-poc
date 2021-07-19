@@ -1,2 +1,2 @@
-# adidas-poc
+# adi-kafka-poc
  
