@@ -48,7 +48,7 @@ public class CustomMessageConverter implements Converter, HeaderConverter {
         Configuration.SenderConfiguration senderConfig = Configuration.SenderConfiguration.fromEnv().withAgentHost("host.docker.internal");
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv().withLogSpans(true).withSender(senderConfig);
         Configuration config = new Configuration("poc-camel-connector-service").withSampler(samplerConfig).withReporter(reporterConfig);
-        JaegerTracer tracer = config.getTracer();
+        tracer = config.getTracer();
     }
 
     @Override
