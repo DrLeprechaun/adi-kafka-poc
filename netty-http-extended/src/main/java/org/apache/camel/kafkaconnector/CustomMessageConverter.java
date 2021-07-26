@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import io.jaegertracing.Configuration;
 import io.jaegertracing.internal.JaegerTracer;
 import io.opentracing.Span;
-import io.opentracing.util.GlobalTracer;
 import org.apache.camel.kafkaconnector.holmes.logger.HolmesMessage;
 import org.apache.camel.kafkaconnector.holmes.model.AuditType;
 import org.apache.camel.kafkaconnector.holmes.model.Level;
@@ -50,7 +49,6 @@ public class CustomMessageConverter implements Converter, HeaderConverter {
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv().withLogSpans(true).withSender(senderConfig);
         Configuration config = new Configuration("poc-camel-connector-service").withSampler(samplerConfig).withReporter(reporterConfig);
         JaegerTracer tracer = config.getTracer();
-        GlobalTracer.registerIfAbsent(tracer);
     }
 
     @Override
@@ -89,6 +87,7 @@ public class CustomMessageConverter implements Converter, HeaderConverter {
             span.log(ImmutableMap.of("Adidas PoC log", "This is the log sample",
                     "Custom field", "And this is just custom field value"));
             span.finish();
+            LOG.info("+++ INPUT MESSAGE: {}", value.toString());
             return serializer.serialize(topic, value == null ? null : value.toString());
         } catch (SerializationException e) {
             throw new DataException("Failed to serialize to a string: ", e);
