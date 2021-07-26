@@ -4,9 +4,10 @@ mvn archetype:generate  -DarchetypeGroupId=org.apache.camel.kafkaconnector.arche
 ### Run Kafka Connect-Standalone:
 $KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties /opt/config/CamelNettyhttpSinkConnector.properties
 $KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties /opt/config/CamelNettyhttpSourceConnector.properties
+$KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties /opt/config/CamelNettyhttpSinkConnector.properties /opt/config/CamelNettyhttpSourceConnector.properties
 
 ### Request for Source Connector
-curl --header "Content-Type: application/json" --request POST \--data '{"username":"xyz","password":"xyz"}' http://localhost:8093
+curl --header "Content-Type: application/json" --request POST \--data '{"username":"xyz","password":"xyz"}' -v http://localhost:8093
 
 ### Jaeger Docker build and run
 docker run -d --name jaeger \

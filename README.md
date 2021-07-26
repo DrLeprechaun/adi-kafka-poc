@@ -13,6 +13,8 @@
 
 `$KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties /opt/config/CamelNettyhttpSourceConnector.properties`
 
+`$KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties /opt/config/CamelNettyhttpSinkConnector.properties /opt/config/CamelNettyhttpSourceConnector.properties`
+
 # Request for Source Connector
 `curl --header "Content-Type: application/json" --request POST \--data '{"username":"xyz","password":"xyz"}' http://localhost:8093`
 
