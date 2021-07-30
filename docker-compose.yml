@@ -11,7 +11,7 @@ services:
       - "8093:8093"
     environment:
       KAFKA_ADVERTISED_HOST_NAME: host.docker.internal
-      KAFKA_CREATE_TOPICS: "test:1:1"
+      KAFKA_CREATE_TOPICS: "test:1:1,input:1:1,output:1:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

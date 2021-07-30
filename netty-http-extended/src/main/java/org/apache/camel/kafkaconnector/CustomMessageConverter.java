@@ -3,12 +3,17 @@ package org.apache.camel.kafkaconnector;
 import com.google.common.collect.ImmutableMap;
 import io.jaegertracing.Configuration;
 import io.jaegertracing.internal.JaegerTracer;
+import io.netty.buffer.CompositeByteBuf;
 import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.tag.Tags;
+import org.apache.camel.component.netty.http.NettyChannelBufferStreamCache;
 import org.apache.camel.kafkaconnector.holmes.logger.HolmesMessage;
 import org.apache.camel.kafkaconnector.holmes.model.AuditType;
 import org.apache.camel.kafkaconnector.holmes.model.Level;
 import org.apache.camel.kafkaconnector.holmes.model.impl.*;
 import org.apache.camel.kafkaconnector.holmes.util.LoggingUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -25,6 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +53,7 @@ public class CustomMessageConverter implements Converter, HeaderConverter {
 
     public CustomMessageConverter() {
         //Jaeger tracer configuration
+        //.withPropagation() - headers?
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv().withType("const").withParam(1);
         Configuration.SenderConfiguration senderConfig = Configuration.SenderConfiguration.fromEnv().withAgentHost("host.docker.internal");
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv().withLogSpans(true).withSender(senderConfig);
@@ -81,6 +91,8 @@ public class CustomMessageConverter implements Converter, HeaderConverter {
     @Override
     public byte[] fromConnectData(String topic, Schema schema, Object value) {
         try {
+            //SpanContext
+
             Span span = tracer.buildSpan("source").start();
             span.setTag("span-tag", "tag-value-source");
             span.setBaggageItem("adidas-poc-baggage-item", "baggage-item-value");
@@ -88,6 +100,7 @@ public class CustomMessageConverter implements Converter, HeaderConverter {
                     "Custom field", "And this is just custom field value"));
             span.finish();
             LOG.info("+++ INPUT MESSAGE: {}", value.toString());
+
             return serializer.serialize(topic, value == null ? null : value.toString());
         } catch (SerializationException e) {
             throw new DataException("Failed to serialize to a string: ", e);
@@ -113,6 +126,9 @@ public class CustomMessageConverter implements Converter, HeaderConverter {
 
             Span span = tracer.buildSpan("sink").start();
             span.setTag("span-tag", "tag-value-sink");
+            //span.setTag(Tags.ERROR, true); //Makes span "red"
+            //LOG.info("+++ TRACE ID: {}", span.context().toTraceId()); // trace ID
+            //LOG.info("+++ SPAN ID: {}", span.context().toSpanId()); // span ID
             span.setBaggageItem("adidas-poc-baggage-item", "baggage-item-value");
             span.log(ImmutableMap.of("Adidas PoC log", "This is the log sample",
                     "Custom field", "And this is just custom field value",

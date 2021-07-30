@@ -1,0 +1,9 @@
+{
+  "name": "custom-sink-connector",
+  "config": {
+    "connector.class": "org.adikafka.poc.CustomSinkConnector",
+    "first.required.param": "Kafka",
+    "second.required.param": "Connect",
+    "tasks.max": "1"
+  }
+}

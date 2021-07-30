@@ -28,15 +28,21 @@ RUN mkdir -p /opt/connectors
 #COPY ./camel-netty-http-kafka-connector-0.7.0-package.tar.gz /opt/connectors
 #RUN tar -xvzf /opt/connectors/camel-netty-http-kafka-connector-0.7.0-package.tar.gz --directory /opt/connectors
 #RUN rm /opt/connectors/camel-netty-http-kafka-connector-0.7.0-package.tar.gz
-# Custom connector
+
+# Extended Camel Kafka Netty HTTP connector
 COPY ./netty-http-extended/target/netty-http-extended-0.7.0-package.tar.gz /opt/connectors
 RUN tar -xvzf /opt/connectors/netty-http-extended-0.7.0-package.tar.gz --directory /opt/connectors
 RUN rm /opt/connectors/netty-http-extended-0.7.0-package.tar.gz
+
+# Custom connector
+COPY ./custom-sink-connector/target/custom-sink-connector-1.0-SNAPSHOT-jar-with-dependencies.jar /opt/connectors
+COPY ./custom-sink-connector/custom-sink-connector.json /opt/connectors
 
 #Copy connector properties
 RUN mkdir -p /opt/config
 COPY ./CamelNettyhttpSinkConnector.properties /opt/config
 COPY ./CamelNettyhttpSourceConnector.properties /opt/config
+COPY ./custom-sink-connector/CustomSinkConnector.properties /opt/config
 
 COPY download-kafka.sh start-kafka.sh broker-list.sh create-topics.sh versions.sh /tmp/
 

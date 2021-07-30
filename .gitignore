@@ -1,3 +1,5 @@
 *.iml
 *.idea
 netty-http-extended/target/*
+target
+custom-sink-connector/target/*
