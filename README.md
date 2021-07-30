@@ -18,7 +18,7 @@ Camel Netty HTTP Source Connector:
 Camel Netty HTTP Sink&Source Connector:
 `$KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties /opt/config/CamelNettyhttpSinkConnector.properties /opt/config/CamelNettyhttpSourceConnector.properties`
 
-Camel Netty HTTP Sink Connector:
+Custom Sink Connector:
 `$KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties /opt/config/CustomSinkConnector.properties`
 
 ## Request for Source Connector

@@ -28,20 +28,27 @@ public class CustomSinkConnectorTask extends SinkTask {
     }
 
     public void put(Collection<SinkRecord> collection) {
+        log.info("+++ PUT VOID STARTS. COLLECTION SIZE: {}", collection.size());
         for (SinkRecord sinkRecord : collection) {
-            // TODO: your implementation goes here
-            OkHttpClient client = new OkHttpClient();
-
-            RequestBody body = RequestBody.create(
-                    sinkRecord.value().toString(), MediaType.parse("application/json"));
-
-            Request request = new Request.Builder()
-                    .url(config.getString("https://enj9dtgx4z1d62y.m.pipedream.net"))
-                    .post(body)
-                    .build();
-
+            log.info("+++ COLLECTION PROCESSING STARTED");
             try {
-                client.newCall(request).execute();
+                OkHttpClient client = new OkHttpClient();
+
+                RequestBody body = RequestBody.create(
+                        sinkRecord.value().toString(), MediaType.parse("application/json"));
+
+                Request request = new Request.Builder()
+                        .url("https://enj9dtgx4z1d62y.m.pipedream.net")
+                        .post(body)
+                        .build();
+
+                log.info("+++ EXECUTE REQUEST");
+
+                Response response = client.newCall(request).execute();
+                log.info("+++ RESPONSE CODE: {}", response.code());
+                if (response.body() != null) {
+                    log.info("+++ RESPONSE BODY: {}", response.body().toString());
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
