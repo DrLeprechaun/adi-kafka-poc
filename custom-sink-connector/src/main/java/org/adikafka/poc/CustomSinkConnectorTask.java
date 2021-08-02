@@ -5,7 +5,12 @@ import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.sink.SinkTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.common.serialization.LongSerializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -49,10 +54,36 @@ public class CustomSinkConnectorTask extends SinkTask {
                 if (response.body() != null) {
                     log.info("+++ RESPONSE BODY: {}", response.body().toString());
                 }
-            } catch (IOException e) {
+
+                writeToKafka(sinkRecord.key().toString(), response.code());
+            } catch (IOException | InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void writeToKafka(String key, int code) throws ExecutionException, InterruptedException {
+        String server = "localhost:9092";
+        String topicName = "output";
+        String message = "{\"key\": \"" + key +"\"; \"code:\"" + code + "\";}";
+
+        final Properties props = new Properties();
+
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                server);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+                LongSerializer.class.getName());
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                StringSerializer.class.getName());
+
+        final Producer<Long, String> producer =
+                new KafkaProducer<>(props);
+
+        RecordMetadata recordMetadata = (RecordMetadata) producer.send(new ProducerRecord(topicName, message)).get();
+        if (recordMetadata.hasOffset())
+            System.out.println("Message sent successfully");
+
+        producer.close();
     }
 
 }
