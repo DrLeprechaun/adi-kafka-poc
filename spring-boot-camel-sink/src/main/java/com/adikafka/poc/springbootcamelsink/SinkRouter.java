@@ -17,5 +17,13 @@ public class SinkRouter extends RouteBuilder {
                 .routeId("fromKafka")
                 .log("Message from Kafka: ${body}")
                 .to("{{sink.endpoint}}");
+        //DLQ - неуспех
+        //Response - успех
+        //exactly once - через свойства
+        //schema validation - Дима
+        //трейсинг
+        //логгинг
+        //метрики
+        //retry - через свой endpoint
     }
 }
