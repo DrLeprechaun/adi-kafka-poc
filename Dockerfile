@@ -34,15 +34,20 @@ COPY ./netty-http-extended/target/netty-http-extended-0.7.0-package.tar.gz /opt/
 RUN tar -xvzf /opt/connectors/netty-http-extended-0.7.0-package.tar.gz --directory /opt/connectors
 RUN rm /opt/connectors/netty-http-extended-0.7.0-package.tar.gz
 
-# Custom connector
+# Custom Sink connector
 COPY ./custom-sink-connector/target/custom-sink-connector-1.0-SNAPSHOT-jar-with-dependencies.jar /opt/connectors
 COPY ./custom-sink-connector/custom-sink-connector.json /opt/connectors
+
+# Custom Source connector
+COPY ./custom-source-connector/target/custom-source-connector-1.0-SNAPSHOT-jar-with-dependencies.jar /opt/connectors
+COPY ./custom-source-connector/custom-source-connector.json /opt/connectors
 
 #Copy connector properties
 RUN mkdir -p /opt/config
 COPY ./CamelNettyhttpSinkConnector.properties /opt/config
 COPY ./CamelNettyhttpSourceConnector.properties /opt/config
 COPY ./custom-sink-connector/CustomSinkConnector.properties /opt/config
+COPY ./custom-source-connector/CustomSourceConnector.properties /opt/config
 
 COPY download-kafka.sh start-kafka.sh broker-list.sh create-topics.sh versions.sh /tmp/
 

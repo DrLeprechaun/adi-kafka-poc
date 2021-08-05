@@ -3,38 +3,46 @@ package org.adikafka.poc;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.source.SourceConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CustomSourceConnector extends SourceConnector {
-    @Override
-    public void start(Map<String, String> map) {
 
+    public static final String VERSION = "1.O.O";
+    private static final Logger log = LoggerFactory.getLogger(CustomSourceConnector.class);
+    private CustomSourceConnectorConfig config;
+
+    @Override
+    public void start(Map<String, String> props) {
+        log.info("{} Starting RestSourceConnector", this);
+        this.config = new CustomSourceConnectorConfig(props);
     }
 
     @Override
     public Class<? extends Task> taskClass() {
-        return null;
+        return CustomSourceConnectorTask.class;
     }
 
     @Override
-    public List<Map<String, String>> taskConfigs(int i) {
-        return null;
+    public List<Map<String, String>> taskConfigs(int maxTasks) {
+        Map<String, String> taskConfig = new HashMap<>(config.originalsStrings());
+        return new ArrayList<>(Collections.nCopies(maxTasks, taskConfig));
     }
 
     @Override
     public void stop() {
-
+        log.info("{} +++ Stopping CustomSourceConnector.", this);
     }
 
     @Override
     public ConfigDef config() {
-        return null;
+        return CustomSourceConnectorConfig.conf();
     }
 
     @Override
     public String version() {
-        return null;
+        return VERSION;
     }
 }

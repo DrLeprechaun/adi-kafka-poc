@@ -21,6 +21,9 @@ Camel Netty HTTP Sink&Source Connector:
 Custom Sink Connector:
 `$KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties /opt/config/CustomSinkConnector.properties`
 
+Custom Source Connector:
+`$KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties /opt/config/CustomSourceConnector.properties`
+
 ## Request for Source Connector
 `curl --header "Content-Type: application/json" --request POST \--data '{"username":"xyz","password":"xyz"}' http://localhost:8093`
 
