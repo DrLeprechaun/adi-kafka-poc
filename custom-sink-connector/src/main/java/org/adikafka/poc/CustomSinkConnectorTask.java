@@ -56,8 +56,13 @@ public class CustomSinkConnectorTask extends SinkTask {
                 }
 
                 writeToKafka(sinkRecord.key().toString(), response.code());
-            } catch (IOException | InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+            } catch (IOException ioe) {
+                //TODO: проверить
+                //retry
+            } catch (InterruptedException ie) {
+                // non-retryable
+            } catch (ExecutionException ee) {
+
             }
         }
     }

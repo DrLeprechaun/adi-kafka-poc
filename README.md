@@ -24,6 +24,9 @@ Custom Sink Connector:
 Custom Source Connector:
 `$KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties /opt/config/CustomSourceConnector.properties`
 
+Custom Sink&Source connectors (together):
+`$KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties /opt/config/CustomSinkConnector.properties /opt/config/CustomSourceConnector.properties`
+
 ## Request for Source Connector
 `curl --header "Content-Type: application/json" --request POST \--data '{"username":"xyz","password":"xyz"}' http://localhost:8093`
 

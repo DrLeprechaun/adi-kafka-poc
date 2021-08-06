@@ -42,7 +42,6 @@ public class CustomSourceConnectorTask extends SourceTask {
     @Override
     public void start(Map<String, String> props) {
         config = new CustomSourceConnectorConfig(props);
-
         //Tracer configuration
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv().withType("const").withParam(1);
         Configuration.SenderConfiguration senderConfig = Configuration.SenderConfiguration.fromEnv().withAgentHost("host.docker.internal");
@@ -54,8 +53,6 @@ public class CustomSourceConnectorTask extends SourceTask {
     @Override
     public List<SourceRecord> poll() throws InterruptedException {
         log.info("+++ POLL METHOD STARTS");
-        Span span = tracer.buildSpan("poll").start();
-        span.setTag("step", "pollMethodStart");
 
         List<SourceRecord> records = new ArrayList<>();
         OkHttpClient client = new OkHttpClient();
@@ -65,21 +62,15 @@ public class CustomSourceConnectorTask extends SourceTask {
                 .get()
                 .build();
 
-        try(Scope scope = tracer.scopeManager().activate(span)) {
+        try {
             log.info("+++ EXECUTE REQUEST");
             Response response = client.newCall(request).execute();
-            if (response.isSuccessful()) {
-                successfulResponseSpan(response.code());
-            } else {
-                unsuccessfulResponseSpan(response.code());
-            }
             records.add(buildRecord(response));
-            toKafkaSpan();
+            pollRequestSpan(response.isSuccessful(), response.code());
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             logHolmes();
-            span.finish();
         }
         return records;
     }
@@ -89,13 +80,13 @@ public class CustomSourceConnectorTask extends SourceTask {
         log.info("{} Stopping RestSourceTask.", this);
     }
 
-    private SourceRecord buildRecord(Response response) {
+    private SourceRecord buildRecord(Response response) throws IOException {
         Schema schema = SchemaBuilder.struct()
                 .name("ItemValue")
                 .parameters(Collections.emptyMap())
                 .field("value", Schema.STRING_SCHEMA)
                 .build();
-        Struct struct = new Struct(schema).put("value", Objects.requireNonNull(response.body()).toString());
+        Struct struct = new Struct(schema).put("value", Objects.requireNonNull(response.body()).string());
         return new SourceRecord(Collections.emptyMap(), Collections.emptyMap(), "output", schema, struct);
     }
 
@@ -125,22 +116,23 @@ public class CustomSourceConnectorTask extends SourceTask {
         log.info("+++ HOLMES message: " + new HolmesMessage(holmesLog).getFormattedMessage());
     }
 
-    private void successfulResponseSpan(int code) {
-        Span span = tracer.buildSpan("successfulResponse").start();
-        try (Scope scope = tracer.scopeManager().activate(span)) {
-            span.log(ImmutableMap.of("responseCode", String.valueOf(code)));
-            span.setTag("step", "responseReceived");
+    private void pollRequestSpan(boolean isSucceded, int code) {
+        Span span = tracer.buildSpan("poll").start();
+        try(Scope scope = tracer.scopeManager().activate(span)) {
+            responseSpan(isSucceded, code);
+            toKafkaSpan();
         } finally {
             span.finish();
         }
     }
 
-    private void unsuccessfulResponseSpan(int code) {
-        Span span = tracer.buildSpan("successfulResponse").start();
+    private void responseSpan(boolean isSucceded, int code) {
+        Span span = tracer.buildSpan("response").start();
         try (Scope scope = tracer.scopeManager().activate(span)) {
-            span.setTag(Tags.ERROR, true);
             span.log(ImmutableMap.of("responseCode", String.valueOf(code)));
-            span.setTag("step", "responseReceived");
+            if (!isSucceded) {
+                span.setTag(Tags.ERROR, true);
+            }
         } finally {
             span.finish();
         }
@@ -149,53 +141,10 @@ public class CustomSourceConnectorTask extends SourceTask {
     private void toKafkaSpan() {
         Span span = tracer.buildSpan("toKafka").start();
         try (Scope scope = tracer.scopeManager().activate(span)) {
-            span.setTag("step", "toKafka");
+            span.setTag("step", "toKafkaConnect");
+            span.log("The response from endpoint was passed downstream to Kafka Connect ");
         } finally {
             span.finish();
         }
     }
-
-    /*private void pushTrace() {
-        //Tracer configuration
-        Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv().withType("const").withParam(1);
-        Configuration.SenderConfiguration senderConfig = Configuration.SenderConfiguration.fromEnv().withAgentHost("localhost");
-        Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv().withLogSpans(true).withSender(senderConfig);
-        Configuration config = new Configuration("poc-camel-connector-service").withSampler(samplerConfig).withReporter(reporterConfig);
-        JaegerTracer tracer = config.getTracer();
-
-        sayHello("helloToJaeger", tracer);
-    }
-
-    private void sayHello(String helloTo, JaegerTracer tracer) {
-        Span span = tracer.buildSpan("say-hello").start();
-        try (Scope scope = tracer.scopeManager().activate(span)) {
-            span.setTag("hello-to", helloTo);
-
-            String helloStr = formatString(helloTo, tracer);
-            printHello(helloStr, tracer);
-        } finally {
-            span.finish();
-        }
-    }
-
-    private String formatString(String helloTo, JaegerTracer tracer) {
-        Span span = tracer.buildSpan("formatString").start();
-        try (Scope scope = tracer.scopeManager().activate(span)) {
-            String helloStr = String.format("Hello, %s!", helloTo);
-            span.log(ImmutableMap.of("event", "string-format", "value", helloStr));
-            return helloStr;
-        } finally {
-            span.finish();
-        }
-    }
-
-    private void printHello(String helloStr, JaegerTracer tracer) {
-        Span span = tracer.buildSpan("printHello").start();
-        try (Scope scope = tracer.scopeManager().activate(span)) {
-            System.out.println(helloStr);
-            span.log(ImmutableMap.of("event", "println"));
-        } finally {
-            span.finish();
-        }
-    }*/
 }
