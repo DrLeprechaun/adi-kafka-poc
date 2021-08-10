@@ -55,7 +55,9 @@ Install connector:
 
 ## Confluent
 Run Confluent:
-From /confluent: `docker-compose up -d`
+    From /confluent:
+        For developers `docker-compose up`
+        For testers: `docker-compose -f docker-compose.yml -f compose-filebeat.yml up`
 
 
  
