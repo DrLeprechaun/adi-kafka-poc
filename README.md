@@ -52,4 +52,10 @@ Get connectors:
 `curl --location --request GET 'http://localhost:8083/connectors'`
 Install connector:
 `curl -X POST -H "Content-Type:application/json" -d @/opt/connectors/custom-sink-connector.json http://localhost:8083/connectors`
+
+## Confluent
+Run Confluent:
+From /confluent: `docker-compose up -d`
+
+
  
