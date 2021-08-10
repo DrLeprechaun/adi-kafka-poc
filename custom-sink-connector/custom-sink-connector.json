@@ -1,9 +1,12 @@
 {
-  "name": "custom-source-connector",
+  "name": "custom-sink-connector",
   "config": {
-    "connector.class": "org.adikafka.poc.CustomSourceConnector",
+    "connector.class": "org.adikafka.poc.CustomSinkConnector",
     "first.required.param": "Kafka",
     "second.required.param": "Connect",
-    "tasks.max": "1"
+    "tasks.max": "1",
+    "topics": "input",
+    "key.converter": "org.adikafka.poc.StringConverter",
+    "value.converter": "org.adikafka.poc.StringConverter"
   }
 }

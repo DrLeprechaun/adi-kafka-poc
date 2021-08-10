@@ -1,0 +1,104 @@
+{
+	"info": {
+		"_postman_id": "1f90a3f9-de38-4f47-8680-3d5029002080",
+		"name": "Kafka Connect",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Перечень коннекторов",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/connector-plugins/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connector-plugins",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Перечень запущенных коннекторов",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/connectors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Sink Connector",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"custom-sink-connector\",\r\n  \"config\": {\r\n    \"connector.class\": \"org.adikafka.poc.CustomSinkConnector\",\r\n    \"first.required.param\": \"Kafka\",\r\n    \"second.required.param\": \"Connect\",\r\n    \"tasks.max\": \"1\",\r\n    \"topics\": \"input\",\r\n    \"key.converter\": \"org.adikafka.poc.StringConverter\",\r\n    \"value.converter\": \"org.adikafka.poc.StringConverter\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/connectors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Source Connector",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"custom-source-connector\",\r\n  \"config\": {\r\n    \"connector.class\": \"org.adikafka.poc.CustomSourceConnector\",\r\n    \"first.required.param\": \"Kafka\",\r\n    \"second.required.param\": \"Connect\",\r\n    \"tasks.max\": \"1\",\r\n    \"topics\": \"output\",\r\n    \"key.converter\": \"org.adikafka.poc.StringConverter\",\r\n    \"value.converter\": \"org.adikafka.poc.StringConverter\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/connectors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
