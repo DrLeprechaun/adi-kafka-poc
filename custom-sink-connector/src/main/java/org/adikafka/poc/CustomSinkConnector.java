@@ -33,7 +33,7 @@ public class CustomSinkConnector extends SinkConnector {
 
     @Override
     public void stop() {
-        log.info("{} +++ Stopping CustomSinkConnector.", this);
+        log.info("{} Stopping CustomSinkConnector.", this);
     }
 
     @Override

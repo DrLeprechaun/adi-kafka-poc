@@ -57,16 +57,17 @@ public class CustomSinkConnectorTask extends SinkTask {
 
                 writeToKafka(sinkRecord.key().toString(), response.code());
             } catch (IOException ioe) {
-                //TODO: проверить
+                //TODO: check
                 //retry
             } catch (InterruptedException ie) {
-                // non-retryable
+                //non-retryable
             } catch (ExecutionException ee) {
-
+                //other
             }
         }
     }
 
+    //TODO: remove
     private void writeToKafka(String key, int code) throws ExecutionException, InterruptedException {
         String server = "localhost:9092";
         String topicName = "output";
