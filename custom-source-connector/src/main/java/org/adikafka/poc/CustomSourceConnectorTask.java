@@ -36,7 +36,7 @@ public class CustomSourceConnectorTask extends SourceTask {
 
     @Override
     public String version() {
-        return null;
+        return CustomSourceConnector.VERSION;
     }
 
     @Override

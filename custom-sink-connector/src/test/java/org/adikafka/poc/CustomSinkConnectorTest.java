@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.kafka.common.config.ConfigDef;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 
 import java.util.List;
 import java.util.Map;

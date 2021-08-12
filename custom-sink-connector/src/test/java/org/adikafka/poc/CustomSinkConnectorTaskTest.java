@@ -2,13 +2,11 @@ package org.adikafka.poc;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CustomSinkConnectorTaskTest {
 
-    @InjectMocks
     private CustomSinkConnectorTask customSinkConnectorTask;
 
     @BeforeEach
