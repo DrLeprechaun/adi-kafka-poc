@@ -1,6 +1,7 @@
 package com.adikafka.http.mock.config;
 
 import com.adikafka.http.mock.filter.KeyAuthFilter;
+import com.adikafka.http.mock.filter.KeyAuthSecretFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,12 +18,44 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import java.util.Map;
+
+import static com.adikafka.http.mock.filter.KeyAuthSecretFilter.*;
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    //KeyAuth
-    private String requestHeader = "api_key";
+    //KeyAuth + Secret START
+    private final String KEY_VALUE = "0&RvPza%2k8";
+    private final String SECRET_VALUE = "7$mQaL%2";
+
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        KeyAuthSecretFilter filter = new KeyAuthSecretFilter();
+        filter.setAuthenticationManager(new AuthenticationManager() {
+
+            @Override
+            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+                Map<String,String> principal = (Map<String,String>) authentication.getPrincipal();
+                if (!KEY_VALUE.equals(principal.get(X_API_KEY)) || principal.get(X_SIGNATURE) == null)
+                {
+                    throw new BadCredentialsException("The API key was not found or not the expected value.");
+                }
+                authentication.setAuthenticated(true);
+                return authentication;
+            }
+        });
+        httpSecurity.
+                antMatcher("/auth/**").
+                csrf().disable().
+                sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
+                and().addFilter(filter).authorizeRequests().anyRequest().authenticated();
+    }
+    //KeyAuth + Secret END
+
+    //KeyAuth START
+    /*private String requestHeader = "api_key";
     private String requestValue = "0&RvPza%2k8";
 
     @Override
@@ -46,9 +79,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 csrf().disable().
                 sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
                 and().addFilter(filter).authorizeRequests().anyRequest().authenticated();
-    }
+    }*/
+    //KeyAuth END
 
-    //BA
+    //Basic Auth START
     /*@Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -80,4 +114,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .password("{noop}password")
                 .roles("USER");
     }*/
+    //Basic Auth END
 }

@@ -10,19 +10,19 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping(path = "/auth")
-public class BasicAuthController {
+public class KeyAuthSecretController {
 
-    @GetMapping(path="/basic")
-    public String basicAuthGet()
+    @GetMapping(path="/keysecret")
+    public String keyAuthGet()
     {
-        return "Basic authentication OK";
+        return "KeyAuth Secret authentication OK";
     }
 
-    @PostMapping (path="/basic", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public String basicAuthPost(HttpEntity<String> httpEntity)
+    @PostMapping(path="/keysecret", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public String keyAuthPost(HttpEntity<String> httpEntity)
     {
         String json = httpEntity.getBody();
         System.out.println(json);
-        return "Basic authentication OK";
+        return "KeyAuth Secret authentication OK";
     }
 }
